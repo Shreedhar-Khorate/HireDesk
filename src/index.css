@@ -5,22 +5,31 @@
 @tailwind utilities;
 
 body {
-  @apply bg-dark text-secondary font-sans antialiased;
+  @apply bg-[#050505] text-secondary font-sans antialiased selection:bg-primary selection:text-black;
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(212, 242, 35, 0.05), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(76, 29, 149, 0.1), transparent 25%);
+  background-attachment: fixed;
+}
+
+/* Glassmorphism Utilities */
+.glass-card {
+  @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-xl;
+}
+
+.glass-panel {
+  @apply bg-[#0A0A0A]/80 backdrop-blur-xl border-r border-white/5;
 }
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-dark;
+  @apply bg-transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-surface rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-primary;
+  @apply bg-white/10 rounded-full hover:bg-primary/50 transition-colors;
 }

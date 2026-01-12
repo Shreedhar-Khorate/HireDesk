@@ -20,12 +20,12 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`fixed w-full z-50 transition-all duration-300 ${isHome ? 'bg-transparent backdrop-blur-sm' : 'bg-dark border-b border-gray-800'}`}>
+      <nav className={`fixed w-full z-50 transition-all duration-300 ${isHome ? 'bg-transparent backdrop-blur-sm' : 'bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/5'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="text-3xl font-display font-bold text-white tracking-tighter">
+              <Link to="/" className="text-3xl font-display font-bold text-white tracking-tighter hover:scale-105 transition-transform">
                 Hire<span className="text-primary">Desk</span>
               </Link>
             </div>
@@ -43,10 +43,10 @@ export default function Navbar() {
             <div className="hidden sm:flex items-center gap-3">
               {currentUser ? (
                 <>
-                  <span className="text-gray-400 text-sm">{currentUser.email}</span>
+                  <span className="text-gray-400 text-sm font-medium px-3 py-1 rounded-full bg-white/5 border border-white/5">{currentUser.email}</span>
                   <button
                     onClick={logout}
-                    className="px-5 py-2 rounded-full bg-surface text-white text-sm font-medium hover:bg-primary hover:text-dark transition-colors duration-300 border border-gray-700 hover:border-primary"
+                    className="px-5 py-2 rounded-full bg-white/5 text-white text-sm font-medium hover:bg-primary hover:text-dark transition-all duration-300 border border-white/10 hover:border-primary hover:shadow-[0_0_15px_rgba(212,242,35,0.3)]"
                   >
                     Logout
                   </button>

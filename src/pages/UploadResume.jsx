@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { motion } from 'framer-motion';
-import { Upload, FileText, CheckCircle, AlertCircle, Briefcase } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Upload, FileText, CheckCircle, AlertCircle, Briefcase, X, Loader2 } from 'lucide-react';
 import api from '../utils/api';
 
 export default function UploadResume() {
@@ -42,6 +42,12 @@ export default function UploadResume() {
     multiple: false
   });
 
+  const handleRemoveFile = (e) => {
+    e.stopPropagation();
+    setUploadedFile(null);
+    setUploadStatus(null);
+  };
+
   const handleUpload = async () => {
     if (!uploadedFile || !selectedJob) {
       setUploadStatus({ type: 'error', message: 'Please select a file and job role' });
@@ -79,159 +85,195 @@ export default function UploadResume() {
   };
 
   return (
-    <div className="min-h-screen bg-dark py-6">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        {/* Background Gradients */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[100px]" />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-500/5 rounded-full blur-[100px]" />
+        </div>
+
+      <div className="max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
-              Upload <span className="text-primary">Resume</span>
+          <div className="text-center mb-10">
+            <motion.div 
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="inline-flex items-center justify-center p-3 mb-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm"
+            >
+                <div className="p-2 bg-primary/10 rounded-xl mr-3">
+                    <Upload className="w-6 h-6 text-primary" />
+                </div>
+                <span className="text-gray-300 font-medium">Resume Parser</span>
+            </motion.div>
+            
+            <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4 tracking-tight">
+              Upload Candidate <span className="text-primary">Resume</span>
             </h1>
-            <p className="text-gray-400 text-lg">
-              Upload candidate resumes to screen them with our AI-powered system
+            <p className="text-gray-400 text-lg max-w-xl mx-auto leading-relaxed">
+              Our AI evaluates candidates against job requirements instantly. Upload a resume to get started.
             </p>
           </div>
 
           {/* Main Card */}
-          <div className="bg-surface rounded-3xl border border-gray-800 p-8 shadow-2xl">
-            {/* Dropzone */}
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 ${
-                isDragActive
-                  ? 'border-primary bg-primary/5'
-                  : uploadedFile
-                  ? 'border-green-500 bg-green-500/5'
-                  : 'border-gray-700 hover:border-primary hover:bg-primary/5'
-              }`}
-            >
-              <input {...getInputProps()} />
-              <motion.div
-                animate={isDragActive ? { scale: 1.05 } : { scale: 1 }}
-                transition={{ duration: 0.2 }}
-              >
-                {uploadedFile ? (
-                  <>
-                    <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-                    <p className="text-xl font-bold text-white mb-2">{uploadedFile.name}</p>
-                    <p className="text-sm text-gray-400">
-                      {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <Upload className="h-16 w-16 text-primary mx-auto mb-4" />
-                    <p className="text-xl font-bold text-white mb-2">
-                      {isDragActive ? 'Drop the file here' : 'Drag & drop resume here'}
-                    </p>
-                    <p className="text-sm text-gray-400 mb-4">or click to browse</p>
-                    <div className="flex justify-center gap-2 text-xs text-gray-500">
-                      <span className="px-2 py-1 bg-dark rounded">PDF</span>
-                      <span className="px-2 py-1 bg-dark rounded">DOCX</span>
-                      <span className="px-2 py-1 bg-dark rounded">JPG</span>
-                      <span className="px-2 py-1 bg-dark rounded">JPEG</span>
+          <div className="glass-card rounded-3xl p-1 shadow-2xl overflow-hidden ring-1 ring-white/10">
+            <div className="bg-[#0A0A0A]/80 backdrop-blur-xl rounded-[20px] p-6 md:p-10">
+                
+                {/* Job Selection */}
+                <div className="mb-8">
+                    <label className="block text-sm font-medium text-gray-300 mb-2 ml-1">
+                        Select Job Role <span className="text-primary">*</span>
+                    </label>
+                    <div className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Briefcase className="h-5 w-5 text-gray-500 group-hover:text-primary transition-colors" />
+                        </div>
+                        <select
+                            value={selectedJob}
+                            onChange={(e) => setSelectedJob(e.target.value)}
+                            className="block w-full pl-10 pr-10 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 sm:text-sm transition-all appearance-none cursor-pointer hover:bg-white/[0.07]"
+                        >
+                            <option value="" disabled className="bg-dark text-gray-500">Choose a position...</option>
+                            {jobs.map((job) => (
+                                <option key={job.id} value={job.id} className="bg-[#1A1A1A] text-white py-2">
+                                    {job.title} - {job.department || 'General'}
+                                </option>
+                            ))}
+                        </select>
+                         <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                        </div>
                     </div>
-                  </>
-                )}
-              </motion.div>
-            </div>
+                </div>
 
-            {/* Job Selection */}
-            <div className="mt-8">
-              <label className="block text-sm font-medium text-primary mb-3">
-                Select Job Role
-              </label>
-              <div className="relative">
-                <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
-                <select
-                  value={selectedJob}
-                  onChange={(e) => setSelectedJob(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-dark border border-gray-800 rounded-xl text-white focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+                {/* Dropzone */}
+                <div 
+                    {...getRootProps()} 
+                    className={`relative group border-2 border-dashed rounded-2xl p-8 md:p-12 text-center cursor-pointer transition-all duration-300 ease-in-out
+                        ${isDragActive 
+                            ? 'border-primary bg-primary/5 scale-[1.01]' 
+                            : 'border-white/10 hover:border-primary/50 hover:bg-white/[0.02]'
+                        }
+                        ${uploadedFile ? 'bg-primary/[0.02] border-primary/30' : ''}
+                    `}
                 >
-                  <option value="">Choose a job role</option>
-                  {jobs.map((job) => (
-                    <option key={job.id} value={job.id}>
-                      {job.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                    <input {...getInputProps()} />
+                    <AnimatePresence mode="wait">
+                        {!uploadedFile ? (
+                            <motion.div
+                                key="upload-prompt"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="flex flex-col items-center"
+                            >
+                                <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-colors duration-300 ${isDragActive ? 'bg-primary/20 text-primary' : 'bg-white/5 text-gray-400 group-hover:bg-primary/10 group-hover:text-primary'}`}>
+                                    <Upload className="w-8 h-8" />
+                                </div>
+                                <h3 className="text-lg font-semibold text-white mb-2">
+                                    {isDragActive ? 'Drop your resume here' : 'Drag & drop your resume'}
+                                </h3>
+                                <p className="text-gray-500 text-sm max-w-xs mx-auto mb-4">
+                                    Supports PDF, DOCX, JPG (Max 10MB)
+                                </p>
+                                <div className="px-4 py-2 rounded-full bg-white/5 text-xs text-gray-400 border border-white/10 group-hover:border-primary/30 transition-colors">
+                                    Browse Files
+                                </div>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="file-preview"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.9 }}
+                                className="relative w-full max-w-sm mx-auto bg-[#1A1A1A] rounded-xl p-4 border border-white/10 shadow-lg flex items-center gap-4"
+                            >
+                                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <FileText className="w-6 h-6 text-primary" />
+                                </div>
+                                <div className="flex-1 min-w-0 text-left">
+                                    <p className="text-sm font-medium text-white truncate">
+                                        {uploadedFile.name}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                        {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                                    </p>
+                                </div>
+                                <button 
+                                    onClick={handleRemoveFile}
+                                    className="p-2 rounded-full hover:bg-white/10 text-gray-400 hover:text-red-400 transition-colors"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+
+                {/* Status Message */}
+                <AnimatePresence>
+                    {uploadStatus && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                            animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                            className={`rounded-xl p-4 flex items-start gap-3 ${
+                                uploadStatus.type === 'error' 
+                                    ? 'bg-red-500/10 border border-red-500/20 text-red-200' 
+                                    : 'bg-green-500/10 border border-green-500/20 text-green-200'
+                            }`}
+                        >
+                            {uploadStatus.type === 'error' ? (
+                                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-400" />
+                            ) : (
+                                <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5 text-green-400" />
+                            )}
+                            <p className="text-sm">{uploadStatus.message}</p>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Action Button */}
+                <div className="mt-8">
+                    <button
+                        onClick={handleUpload}
+                        disabled={uploading || !uploadedFile || !selectedJob}
+                        className={`
+                            w-full py-4 px-6 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all duration-300
+                            ${uploading || !uploadedFile || !selectedJob
+                                ? 'bg-white/5 text-gray-500 cursor-not-allowed border border-white/5' 
+                                : 'bg-primary text-black hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_20px_rgba(212,242,35,0.3)]'
+                            }
+                        `}
+                    >
+                        {uploading ? (
+                            <>
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                                Analyzing...
+                            </>
+                        ) : (
+                            <>
+                                <Upload className="w-5 h-5" />
+                                Upload & Assess
+                            </>
+                        )}
+                    </button>
+                </div>
             </div>
-
-            {/* Status Message */}
-            {uploadStatus && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`mt-6 p-4 rounded-xl border ${
-                  uploadStatus.type === 'success'
-                    ? 'bg-green-900/30 border-green-900 text-green-400'
-                    : 'bg-red-900/30 border-red-900 text-red-400'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  {uploadStatus.type === 'success' ? (
-                    <CheckCircle className="h-5 w-5" />
-                  ) : (
-                    <AlertCircle className="h-5 w-5" />
-                  )}
-                  <p>{uploadStatus.message}</p>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Upload Button */}
-            <button
-              onClick={handleUpload}
-              disabled={!uploadedFile || !selectedJob || uploading}
-              className="w-full mt-8 py-4 bg-primary text-dark font-bold text-lg rounded-xl hover:bg-white transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {uploading ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-5 h-5 border-2 border-dark border-t-transparent rounded-full animate-spin" />
-                  Processing...
-                </div>
-              ) : (
-                'Upload Resume'
-              )}
-            </button>
           </div>
-
-          {/* Info Section */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 p-6 bg-surface rounded-2xl border border-gray-800"
-          >
-            <h3 className="text-lg font-bold text-white mb-3">How it works:</h3>
-            <ul className="space-y-2 text-gray-400">
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
-                <span>Upload a resume in PDF, DOCX, JPG, or JPEG format</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
-                <span>Ensure the resume contains a professional email address (e.g., john.doe@email.com) for better identification</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
-                <span>Select the job role the candidate is applying for</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
-                <span>Our AI analyzes the resume and generates a match score</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">•</span>
-                <span>View ranked candidates in the Jobs section</span>
-              </li>
-            </ul>
-          </motion.div>
+          
+            <div className="mt-8 text-center">
+                <p className="text-sm text-gray-500">
+                    By uploading, you agree to our <a href="#" className="text-gray-400 hover:text-primary transition-colors underline">Terms of Service</a> and <a href="#" className="text-gray-400 hover:text-primary transition-colors underline">Privacy Policy</a>.
+                </p>
+            </div>
         </motion.div>
       </div>
     </div>

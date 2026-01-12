@@ -53,18 +53,7 @@ Built with a stunning **Dark/Neon UI**, HireDesk offers a premium user experienc
 - **Routing**: React Router DOM (v7)
 - **Authentication**: Firebase Auth
 
-## 📸 Screenshots
 
-<div align="center">
-  <img src="https://placehold.co/800x450/1a1a1a/D4F223?text=Dashboard+Preview" alt="Dashboard" width="100%" />
-</div>
-
-<br />
-
-<div align="center" style="display: flex; gap: 10px; justify-content: center;">
-  <img src="https://placehold.co/390x250/1a1a1a/D4F223?text=Resume+Upload" alt="Upload" width="48%" />
-  <img src="https://placehold.co/390x250/1a1a1a/D4F223?text=Auth+Modal" alt="Auth" width="48%" />
-</div>
 
 ## 🚀 Getting Started
 

@@ -48,12 +48,65 @@ Built with a stunning **Dark/Neon UI**, HireDesk offers a premium user experienc
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS
 - **Animations**: Framer Motion
+- **Routing**: React Router DOM
+- **Icons**: Lucide React
+- **Backend/Auth**: Firebase
+- **State Management**: React Context API
+
+## 📂 Project Structure
+
+```bash
+HireDesk/
+├── src/
+│   ├── components/       # Reusable UI components (Modals, Navbar, etc.)
+│   ├── contexts/         # React Context providers (AuthContext)
+│   ├── pages/            # Application pages (Dashboard, Jobs, Home)
+│   ├── utils/            # Utility functions and API helpers
+│   ├── assets/           # Static assets
+│   ├── App.jsx           # Main application component
+│   └── main.jsx          # Entry point
+├── public/               # Public assets
+└── README.md             # Project documentation
+```
+
+## ⚙️ Installation & Setup
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/yourusername/hiredesk.git
+   cd hiredesk
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Configure Firebase**
+
+   - Update `src/firebase.js` with your Firebase project credentials if needed.
+
+4. **Run the development server**
+
+   ```bash
+   npm run dev
+   ```
+
+5. **Build for production**
+   ```bash
+   npm run build
+   ```
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
 - **Icons**: Lucide React
 - **HTTP Client**: Axios
 - **Routing**: React Router DOM (v7)
 - **Authentication**: Firebase Auth
-
-
 
 ## 🚀 Getting Started
 
